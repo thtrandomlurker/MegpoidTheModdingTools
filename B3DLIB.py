@@ -86,6 +86,15 @@ class Bone(object):
         self.ChildID
         self.unk1
         self.unk2
+class IKInfo(object):
+    def IKInfo(self):
+        self.Unk0
+        self.NextSectionEntryCount # idk what to call this
+        self.Target
+        self.Float
+        self.Unk2
+        self.Unk3
+        self.NextDat
        
 class VertexSet(object):
     def VertexSet(self):
@@ -170,10 +179,25 @@ def ModelReader(f):
         B.unk1 = struct.unpack('I', f.read(4))[0]
         B.unk2 = struct.unpack('I', f.read(4))[0]
         Bones.append(B.__dict__)
-    if f.name == 'TEST.BMD':
-        f.seek(96, 1)
-    else:
-        f.seek(20, 1)
+    IKInfoCount = struct.unpack('I', f.read(4))[0]
+    f.seek(12, 1)
+    IKInfos = []
+    IKNextCount = 0
+    for i in range(IKInfoCount):
+        inf = IKInfo()
+        inf.Unk0 = struct.unpack('I', f.read(4))[0]
+        inf.NextSectionEntryCount = struct.unpack('H', f.read(2))[0] # idk what to call this
+        IKNextCount += inf.NextSectionEntryCount
+        inf.Target = struct.unpack('H', f.read(2))[0]
+        inf.Float = struct.unpack('f', f.read(4))[0]
+        inf.Unk2 = struct.unpack('H', f.read(2))[0]
+        inf.Unk3 = struct.unpack('H', f.read(2))[0]
+        inf.NextDat = []
+        IKInfos.append(inf.__dict__)
+    AfterIKUnk = struct.unpack('I', f.read(4))[0]
+    for i in range(IKInfoCount):
+        for a in range(IKInfos[i]["NextSectionEntryCount"]):
+            IKInfos[i]["NextDat"].append(struct.unpack('H', f.read(2))[0])
     VertexSetCount = struct.unpack('I', f.read(4))[0]
     VertexSetList = []
     for i in range(VertexSetCount):

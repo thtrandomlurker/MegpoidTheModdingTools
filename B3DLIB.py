@@ -143,6 +143,8 @@ class Morph(object):
         self.VertTranslations
         
 def ModelReader(f):
+    f.seek(0x74)
+    modelPhysicsNum = struct.unpack("I", f.read(4))[0]
     f.seek(0x94)
     TextureCount = struct.unpack('I', f.read(4))[0]
     f.seek(16, 1)
@@ -237,20 +239,20 @@ def ModelReader(f):
         Fc.Idx = struct.unpack('I', f.read(4))[0]
         Fc.FaceCount = struct.unpack('h', f.read(2))[0]
         Fc.unk1 = struct.unpack('h', f.read(2))[0]
-        Fc.FaceUnkCount = struct.unpack('h', f.read(2))[0]
+        Fc.FaceBoneCount = struct.unpack('h', f.read(2))[0]
         Fc.unk2 = struct.unpack('h', f.read(2))[0]
         Fc.MatID = struct.unpack('h', f.read(2))[0]
         Fc.unk3 = struct.unpack('h', f.read(2))[0]
         Fc.unk4 = struct.unpack('I', f.read(4))[0]
         Fc.FaceIndices = []
-        Fc.FaceUnks = []
+        Fc.FaceBones = []
         FaceSetList.append(Fc.__dict__)
     f.seek(4, 1)
     for i in range(FaceSetCount):
         for Fc in range(FaceSetList[i]["FaceCount"]):
             FaceSetList[i]["FaceIndices"].append(struct.unpack('H', f.read(2))[0])
-        for Fu in range(FaceSetList[i]["FaceUnkCount"]):
-            FaceSetList[i]["FaceUnks"].append(struct.unpack('H', f.read(2))[0])
+        for Fu in range(FaceSetList[i]["FaceBoneCount"]):
+            FaceSetList[i]["FaceBones"].append(struct.unpack('H', f.read(2))[0])
     MorphCount = struct.unpack('I', f.read(4))[0]
     f.seek(12, 1)
     Morphs = []
@@ -267,7 +269,7 @@ def ModelReader(f):
     for i in range(MorphCount):
         for v in range(Morphs[i]["VertCount"]):
             Morphs[i]["VertTranslations"].append(list(struct.unpack('Ifff', f.read(16)))) # grabs the translation + vert index in one go
-    return {"B3DModel": {"Textures": TexNames, "Materials": Materials, "Bones": Bones, "VertexSets": VertexSetList, "FaceSets": FaceSetList, "MorphData": Morphs}}
+    return {"B3DModel": {"PhysicsNumber": modelPhysicsNum, "Textures": TexNames, "Materials": Materials, "Bones": Bones, "VertexSets": VertexSetList, "FaceSets": FaceSetList, "MorphData": Morphs}}
     
     
         

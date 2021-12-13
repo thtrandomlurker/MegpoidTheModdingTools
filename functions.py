@@ -27,7 +27,7 @@ def convBMD(dumpJson=False):
         # I'll do this in preprocessing, it's easier that way
         VertIDList = []
         for i in range(len(MeshData["B3DModel"]["FaceSets"])):
-            AllowedBones = MeshData["B3DModel"]["FaceSets"][i]["FaceUnks"]
+            AllowedBones = MeshData["B3DModel"]["FaceSets"][i]["FaceBones"]
             for v in range(len(MeshData["B3DModel"]["VertexSets"][i]["Vertices"])):
                 try:
                     MeshData["B3DModel"]["VertexSets"][i]["Vertices"][v]["Bone0"] = AllowedBones[MeshData["B3DModel"]["VertexSets"][i]["Vertices"][v]["Bone0"]]

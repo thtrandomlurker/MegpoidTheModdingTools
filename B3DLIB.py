@@ -111,7 +111,7 @@ class Vertex(object):
         self.Pos
         self.NormalDir
         self.UVCoord
-        self.unk0
+        self.VertexColor
         self.Bone0
         self.Bone1
         self.Bone2
@@ -120,6 +120,7 @@ class Vertex(object):
         self.Weight1
         self.Weight2
         self.Weight3
+        self.VertID
         
 class FaceSet(object):
     def FaceSet(self):
@@ -217,7 +218,7 @@ def ModelReader(f):
             Vert.Pos = list(struct.unpack('fff', f.read(12)))
             Vert.NormalDir = list(struct.unpack('fff', f.read(12)))
             Vert.UVCoord = list(struct.unpack('ff', f.read(8)))
-            Vert.unk0 = struct.unpack('I', f.read(4))[0]
+            Vert.VertexColor = list(struct.unpack('BBBB', f.read(4)))
             Vert.Bone0 = struct.unpack('b', f.read(1))[0]
             Vert.Bone1 = struct.unpack('b', f.read(1))[0]
             Vert.Bone2 = struct.unpack('b', f.read(1))[0]
@@ -226,7 +227,7 @@ def ModelReader(f):
             Vert.Weight1 = struct.unpack('f', f.read(4))[0]
             Vert.Weight2 = struct.unpack('f', f.read(4))[0]
             Vert.Weight3 = struct.unpack('f', f.read(4))[0]
-            f.seek(4, 1)
+            Vert.VertID = struct.unpack('I', f.read(4))[0]
             VertexSetList[i]["Vertices"].append(Vert.__dict__)
     FaceSetCount = struct.unpack('I', f.read(4))[0]
     FaceSetList = []

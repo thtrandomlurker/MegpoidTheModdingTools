@@ -25,6 +25,7 @@ def convBMD(dumpJson=False):
             with open(file_path + '.json', 'w') as j:
                 json.dump(MeshData, j, indent=2, ensure_ascii=False)
         # I'll do this in preprocessing, it's easier that way
+        VertIDList = []
         for i in range(len(MeshData["B3DModel"]["FaceSets"])):
             AllowedBones = MeshData["B3DModel"]["FaceSets"][i]["FaceUnks"]
             for v in range(len(MeshData["B3DModel"]["VertexSets"][i]["Vertices"])):
@@ -59,6 +60,7 @@ def convBMD(dumpJson=False):
             for VSet in MeshData["B3DModel"]["VertexSets"]:
                 HighestBone = 0
                 for Vert in VSet["Vertices"]:
+                    VertIDList.append(Vert["VertID"])
                     pmx.write(struct.pack('f', Vert["Pos"][0]))
                     pmx.write(struct.pack('f', Vert["Pos"][1]))
                     pmx.write(struct.pack('f', Vert["Pos"][2]))
@@ -153,10 +155,7 @@ def convBMD(dumpJson=False):
                     pmx.write(b'\x01')
                     pmx.write(struct.pack('I', morph["VertCount"]))
                     for vert in morph["VertTranslations"]:
-                        if morph["Panel"] == 1:
-                            pmx.write(struct.pack('i', MeshData["B3DModel"]["MorphData"][0]["VertTranslations"][vert[0]][0] + 150))
-                        else:
-                            pmx.write(struct.pack('i', MeshData["B3DModel"]["MorphData"][0]["VertTranslations"][vert[0]][0]))
+                        pmx.write(struct.pack('i', VertIDList.index(MeshData["B3DModel"]["MorphData"][0]["VertTranslations"][vert[0]][0])))
                         pmx.write(struct.pack('f', vert[1]))
                         pmx.write(struct.pack('f', vert[2]))
                         pmx.write(struct.pack('f', vert[3]))

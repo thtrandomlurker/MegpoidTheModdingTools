@@ -8,9 +8,12 @@ if not os.path.exists('DATA_Records/ZIPDIRENTRIES'):
 ParsedFileEntries = 0
 ParsedDirEntries = 0
 FileNameList = []
+FilePathList = []
+FileOffsetList = []
 
 with open('DATA.ZIP', 'rb') as f:
     while True:
+        FileOffsetList.append(f.tell())
         ZipRecordType = f.read(4)
         if ZipRecordType == b'PK\x03\x04': # Standard ZIPFILERECORD
             RecordData = b'PK\x03\x04'
@@ -24,6 +27,7 @@ with open('DATA.ZIP', 'rb') as f:
             RecordData += f.read(2)
             FileNameBytes = f.read(FileNameLength)
             FileName = FileNameBytes.decode('ASCII')
+            FilePathList.append(FileName)
             RecordData += FileNameBytes
             RecordData += f.read(fileSize)
             with open(f'DATA_Records/ZIPFILERECORDS/{FileName.replace("/", "")}', 'wb') as o:
@@ -53,7 +57,7 @@ with open('DATA.ZIP', 'rb') as f:
             break
             
     with open('DATA.lst', 'w') as o:
-        for file in FileNameList:
-            o.write(file + '\n')
+        for idx, file in enumerate(FileNameList):
+            o.write(f"{file}, {FileOffsetList[idx]}\n")
             
             

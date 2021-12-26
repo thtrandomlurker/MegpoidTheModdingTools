@@ -6,8 +6,6 @@ Very early WIP conversion for mmd PMX files to MTM BMD models
 
 Currently supports converting vertices, faces, materials, and bones.
 
-Currently has multiple issues with duplicate vertices and faces due to a pretty terrible method of ensuring FaceSets and VertexSets match up correctly from the master Vertex and FaceIndex lists.
-
 Breaks if any submesh/material uses more than 8 bones, and sometimes even with less than 8 bones.
 
 # Usage

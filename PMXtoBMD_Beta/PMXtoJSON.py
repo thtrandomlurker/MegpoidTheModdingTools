@@ -183,16 +183,44 @@ with open(sys.argv[1], 'rb') as inf:
                 exit()
             Bone = {"Name": BoneName, "BoneMatrix": [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], list(Position) + [1.0]], "BonePosition": list(Position) + [0.0], "unk0": 0, "ParentID": Parent, "ChildID": 0, "unk1": 0, "unk2": 0}
             Bones.append(Bone)
+        Morphs = []
+        ## build base morph
+        #baseMorph = {"Name": "base", "Panel": 0, "VertCount": len(Vertices), "VertTranslations": []}
+        #for index, vert in enumerate(Vertices):
+        #    baseMorph["VertTranslations"].append([index, vert["Pos"][0], vert["Pos"][1], vert["Pos"][2]])
+        #Morphs.append(baseMorph)
+        #preMorphTell = inf.tell()
+        #MorphCount = struct.unpack("I", inf.read(4))[0]
+        #for i in range(MorphCount):
+        #    Morph = {"Name": "", "Panel": 0, "VertCount": 0, "VertTranslations": []}
+        #    Morph["Name"] = ReadPMXString(inf)
+        #    MorphNameEN = ReadPMXString(inf)
+        #    Morph["Panel"] = inf.read(1)[0]
+        #    MorphType = inf.read(1)[0]
+        #    Morph["VertCount"] = struct.unpack("I", inf.read(4))[0]
+        #    for o in range(Morph["VertCount"]):
+        #        vIndex = struct.unpack(vis, inf.read(VertIndexSize))[0]
+        #        translation = struct.unpack("fff", inf.read(12))
+        #        Morph["VertTranslations"].append([vIndex, translation[0], translation[1], translation[2]])
+        #    Morphs.append(Morph)
+            
         VertexSets = []
         BaseSubtract = 0
         for i in range(MaterialCount):
             FaceSet = FaceSets[i]
             VtxSetVerts = []
             newIndices = []
+            processedIndices = []
             usedBoneIndices = []
-            for idx, index in enumerate(FaceSet["FaceIndices"]):
-                VtxSetVerts.append(copy.deepcopy(Vertices[index]))
-                newIndices.append(idx)
+            idx = 0
+            for index in FaceSet["FaceIndices"]:
+                VertCopy = copy.deepcopy(Vertices[index])
+                if VertCopy in VtxSetVerts:
+                    newIndices.append(VtxSetVerts.index(VertCopy))
+                else:
+                    VtxSetVerts.append(VertCopy)
+                    newIndices.append(idx)
+                    idx += 1
             for idx, vert in enumerate(VtxSetVerts):
                 if vert["Bone0"] not in usedBoneIndices:
                     usedBoneIndices.append(vert["Bone0"])
@@ -218,12 +246,13 @@ with open(sys.argv[1], 'rb') as inf:
             VertexSet = {"unk0": 0, "unk1": 0, "VtxCount": len(VtxSetVerts), "unk2": 0, "unk3": 0, "unk4": 0, "Vertices": VtxSetVerts}
             FaceSet["FaceIndices"] = newIndices
             FaceSet["FaceBones"] = usedBoneIndices
-            FaceSet["FaceBoneCount"] = BoneCount # allow all bones
+            FaceSet["FaceBoneCount"] = len(usedBoneIndices) # allow all bones
             outDict["B3DModel"]["FaceSets"].append(FaceSet)
             outDict["B3DModel"]["VertexSets"].append(VertexSet)
         outDict["B3DModel"]["Bones"] = Bones
         outDict["B3DModel"]["Textures"] = TextureList
         outDict["B3DModel"]["Materials"] = Materials
+        outDict["B3DModel"]["MorphData"] = Morphs
         
         json.dump(outDict, out, indent=2, ensure_ascii=False)
             

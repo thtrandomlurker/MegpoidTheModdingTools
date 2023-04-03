@@ -184,25 +184,25 @@ with open(sys.argv[1], 'rb') as inf:
             Bone = {"Name": BoneName, "BoneMatrix": [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], list(Position) + [1.0]], "BonePosition": list(Position) + [0.0], "unk0": 0, "ParentID": Parent, "ChildID": 0, "unk1": 0, "unk2": 0}
             Bones.append(Bone)
         Morphs = []
-        ## build base morph
-        #baseMorph = {"Name": "base", "Panel": 0, "VertCount": len(Vertices), "VertTranslations": []}
-        #for index, vert in enumerate(Vertices):
-        #    baseMorph["VertTranslations"].append([index, vert["Pos"][0], vert["Pos"][1], vert["Pos"][2]])
-        #Morphs.append(baseMorph)
-        #preMorphTell = inf.tell()
-        #MorphCount = struct.unpack("I", inf.read(4))[0]
-        #for i in range(MorphCount):
-        #    Morph = {"Name": "", "Panel": 0, "VertCount": 0, "VertTranslations": []}
-        #    Morph["Name"] = ReadPMXString(inf)
-        #    MorphNameEN = ReadPMXString(inf)
-        #    Morph["Panel"] = inf.read(1)[0]
-        #    MorphType = inf.read(1)[0]
-        #    Morph["VertCount"] = struct.unpack("I", inf.read(4))[0]
-        #    for o in range(Morph["VertCount"]):
-        #        vIndex = struct.unpack(vis, inf.read(VertIndexSize))[0]
-        #        translation = struct.unpack("fff", inf.read(12))
-        #        Morph["VertTranslations"].append([vIndex, translation[0], translation[1], translation[2]])
-        #    Morphs.append(Morph)
+        # build base morph
+        baseMorph = {"Name": "base", "Panel": 0, "VertCount": len(Vertices), "VertTranslations": []}
+        for index, vert in enumerate(Vertices):
+            baseMorph["VertTranslations"].append([index, vert["Pos"][0], vert["Pos"][1], vert["Pos"][2]])
+        Morphs.append(baseMorph)
+        preMorphTell = inf.tell()
+        MorphCount = struct.unpack("I", inf.read(4))[0]
+        for i in range(MorphCount):
+            Morph = {"Name": "", "Panel": 0, "VertCount": 0, "VertTranslations": []}
+            Morph["Name"] = ReadPMXString(inf)
+            MorphNameEN = ReadPMXString(inf)
+            Morph["Panel"] = inf.read(1)[0]
+            MorphType = inf.read(1)[0]
+            Morph["VertCount"] = struct.unpack("I", inf.read(4))[0]
+            for o in range(Morph["VertCount"]):
+                vIndex = struct.unpack(vis, inf.read(VertIndexSize))[0]
+                translation = struct.unpack("fff", inf.read(12))
+                Morph["VertTranslations"].append([vIndex, translation[0], translation[1], translation[2]])
+            Morphs.append(Morph)
             
         VertexSets = []
         BaseSubtract = 0

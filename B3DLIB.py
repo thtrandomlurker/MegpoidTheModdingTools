@@ -86,15 +86,15 @@ class Bone(object):
         self.ChildID
         self.unk1
         self.unk2
+
 class IKInfo(object):
     def IKInfo(self):
         self.Unk0
-        self.NextSectionEntryCount # idk what to call this
-        self.Target
-        self.Float
-        self.Unk2
-        self.Unk3
-        self.NextDat
+        self.IKChainIndexCount # idk what to call this
+        self.Unk1
+        self.AngleLimit  # is this the right term?
+        self.IKBoneIndex
+        self.IKTargetIndex
        
 class VertexSet(object):
     def VertexSet(self):
@@ -141,6 +141,7 @@ class Morph(object):
         self.Panel
         self.VertCount
         self.VertTranslations
+    
         
 def ModelReader(f):
     f.seek(0x74)
@@ -158,7 +159,11 @@ def ModelReader(f):
         Mat = Material()
         Mat.s1 = struct.unpack('I', f.read(4))[0]
         Mat.s2 = struct.unpack('h', f.read(2))[0]
-        Mat.TexName = TexNames[struct.unpack('h', f.read(2))[0]]
+        matTexIndex = struct.unpack('h', f.read(2))[0]
+        if matTexIndex == -1:
+            Mat.TexName = ""
+        else:
+            Mat.TexName = TexNames[matTexIndex]
         Mat.Diffuse = struct.unpack('BBBB', f.read(4))
         Mat.Ambient = struct.unpack('BBBB', f.read(4))
         Mat.Specular = struct.unpack('BBBB', f.read(4))

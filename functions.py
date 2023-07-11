@@ -124,7 +124,10 @@ def convBMD(dumpJson=False):
                 pmx.write(struct.pack('f', MeshData["B3DModel"]["Materials"][MeshData["B3DModel"]["FaceSets"][i]["MatID"]]["Ambient"][2] / 255))
                 pmx.write(b'\x0F')
                 pmx.write(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
-                pmx.write(struct.pack('I', MeshData["B3DModel"]["Textures"].index(MeshData["B3DModel"]["Materials"][MeshData["B3DModel"]["FaceSets"][i]["MatID"]]["TexName"])))
+                if MeshData["B3DModel"]["Materials"][MeshData["B3DModel"]["FaceSets"][i]["MatID"]]["TexName"] != "":
+                    pmx.write(struct.pack('I', MeshData["B3DModel"]["Textures"].index(MeshData["B3DModel"]["Materials"][MeshData["B3DModel"]["FaceSets"][i]["MatID"]]["TexName"])))
+                else:
+                    pmx.write(struct.pack('I', 0))
                 pmx.write(b'\xFF\xFF\xFF\xFF')
                 pmx.write(b'\x00\x00\xFF\xFF\xFF\xFF\x00\x00\x00\x00')
                 pmx.write(struct.pack('I', MeshData["B3DModel"]["FaceSets"][i]["FaceCount"]))
